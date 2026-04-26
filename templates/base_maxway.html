@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MaxWay Admin{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body> 
+    <div class="mobMenu"> 
+      <div class="container"> 
+        <div class="menu"> 
+          <div class="logo"><a href="{% url 'dashboard' %}">
+             <svg width="52" height="55" viewBox="0 0 52 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- SVG path for MaxWay logo -->
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M31.8607 53.4586C31.8607 53.3384 31.9744..." fill="#800A7A"/>
+                <!-- ... rest of the SVG from index_1 ... -->
+             </svg>
+             <span style="font-weight: bold; color: #800A7A; font-size: 24px;">MaxWay</span>
+          </a></div>
+          <button class="main"> <span></span></button>
+        </div>
+      </div>
+      <div class="main__menu">
+        <ul> 
+          <li class="list"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+          <li class="list"><a href="{% url 'faculty_list' %}">Faculty</a></li>
+          <li class="list"><a href="{% url 'kafedra_list' %}">Kafedra</a></li>
+          <li class="list"><a href="{% url 'subject_list' %}">Subject</a></li>
+          <li class="list"><a href="{% url 'teacher_list' %}">Teacher</a></li>
+          <li class="list"><a href="{% url 'group_list' %}">Group</a></li>
+          <li class="list"><a href="{% url 'student_list' %}">Student</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="header" style="padding-bottom: 20px;">
+      <div class="container"> 
+        <div class="menu"> 
+          <div class="logo"><a href="{% url 'dashboard' %}">
+               <img src="{% static 'images/icon/logo.png' %}" alt="MaxWay" style="height: 50px;" />
+               <span style="font-weight: bold; color: #800A7A; font-size: 24px; vertical-align: middle;">Admin Panel</span>
+          </a></div>
+          <div class="menu__ul"> 
+            <ul> 
+              <li class="list"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+              <li class="list"><a href="{% url 'faculty_list' %}">Faculty</a></li>
+              <li class="list"><a href="{% url 'student_list' %}">Student</a></li>
+            </ul>
+            <div class="phone--shop">
+                <div class="phone"> 
+                  <div class="phone--text">Admin: <b>{{ user.username }}</b></div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content"> 
+      <div class="container" style="background: #fff; border-radius: 15px; padding: 30px; margin-top: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05);"> 
+        {% block content %}{% endblock %}
+      </div>
+    </div>
+
+    <footer class="footer" style="margin-top: 50px;"> 
+      <div class="container"> 
+        <p style="text-align: center; color: #666;">&copy; 2026 MaxWay - Admin Management System</p>
+      </div>
+    </footer>
+
+    <!-- Scripts from original template or necessary ones -->
+    <script src="{% static 'vendor/jquery-3.2.1.min.js' %}"></script>
+    {% block javascript %}{% endblock %}
+  </body>
+</html>

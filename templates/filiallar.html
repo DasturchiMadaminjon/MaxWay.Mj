@@ -1,0 +1,102 @@
+{% load humanize %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MaxWay - Filiallarimiz</title>
+  <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #fafafa; }
+    .header-top { background: #fff; padding: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+    .logo-area { display: flex; align-items: center; justify-content: space-between; }
+    
+    .page-title { text-align: center; color: #800A7A; font-size: 32px; font-weight: 800; margin: 40px 0; }
+    
+    .branches-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+    
+    .branch-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      transition: transform 0.3s;
+      border: 1px solid #f0f0f0;
+    }
+    .branch-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(128, 10, 122, 0.1);
+    }
+    
+    .b-name { font-size: 20px; font-weight: 700; color: #333; margin-bottom: 10px; }
+    .b-detail { font-size: 15px; color: #666; margin-bottom: 8px; display: flex; align-items: start; }
+    .b-detail strong { color: #222; margin-right: 5px; width: 80px; }
+    
+    .btn-maps {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 10px 20px;
+      background: #F1B301;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      text-align: center;
+      width: 100%;
+    }
+    .btn-maps:hover { background: #d9a000; }
+    
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #800A7A;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<header class="header-top">
+  <div class="container">
+    <div class="logo-area">
+      <a href="{% url 'product_list' %}" style="text-decoration:none;">
+        <span style="font-weight: 800; color: #800A7A; font-size: 28px;">Max</span><span style="font-weight: 800; color: #F1B301; font-size: 28px;">Way</span>
+      </a>
+      <a href="{% url 'product_list' %}" class="back-btn" style="margin:0;">&larr; Asosiy sahifaga qaytish</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <h1 class="page-title">Bizning Filiallar</h1>
+  
+  <div class="branches-grid">
+    {% for branch in branches %}
+    <div class="branch-card">
+      <div class="b-name">{{ branch.name }}</div>
+      <div class="b-detail"><strong>Manzil:</strong> <span>{{ branch.address }}</span></div>
+      <div class="b-detail"><strong>Ish vaqti:</strong> <span>{{ branch.working_hours }}</span></div>
+      <div class="b-detail"><strong>Telefon:</strong> <span>{{ branch.phone }}</span></div>
+      
+      {% if branch.location_url %}
+      <a href="{{ branch.get_map_url }}" target="_blank" class="btn-maps">Xaritada ko'rish</a>
+      {% endif %}
+    </div>
+    {% empty %}
+    <div style="grid-column: 1/-1; text-align: center; color: #888; padding: 50px;">
+      Hozircha filiallar kiritilmagan.
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+</body>
+</html>

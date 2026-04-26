@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_title %}Tizim Loglari (Faolliklar){% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h3 style="margin: 0; color: #800A7A; font-weight: 800;">Oxirgi 100 ta harakat</h3>
+    </div>
+
+    <div class="table-responsive">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="border-bottom: 2px solid #f0f0f0; text-align: left;">
+                    <th style="padding: 15px; color: #888;">Admin</th>
+                    <th style="padding: 15px; color: #888;">Harakat</th>
+                    <th style="padding: 15px; color: #888;">Obyekt</th>
+                    <th style="padding: 15px; color: #888;">Xabar</th>
+                    <th style="padding: 15px; color: #888;">Vaqt</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr style="border-bottom: 1px solid #f9f9f9; transition: 0.3s;" onmouseover="this.style.background='#fcfcfc'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 15px; font-weight: 700;">
+                        {{ log.user.username|default:"Sistema" }}
+                    </td>
+                    <td style="padding: 15px;">
+                        {% if log.action == 'create' %}
+                        <span style="background: #e3fcef; color: #00875a; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">YARATISH</span>
+                        {% elif log.action == 'edit' %}
+                        <span style="background: #fff0b3; color: #856404; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">O'ZGARTIRISH</span>
+                        {% elif log.action == 'delete' %}
+                        <span style="background: #ffebe6; color: #bf2600; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">O'CHIRISH</span>
+                        {% else %}
+                        <span style="background: #deebff; color: #0747a6; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold;">{{ log.action|upper }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 15px; color: #666;">{{ log.entity }}</td>
+                    <td style="padding: 15px; font-weight: 500;">{{ log.message }}</td>
+                    <td style="padding: 15px; color: #999; font-size: 13px;">{{ log.created_at|date:"d-M, H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

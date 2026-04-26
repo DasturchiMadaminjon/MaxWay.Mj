@@ -1,0 +1,48 @@
+{% load humanize %}
+<div class="modal-header d-flex justify-content-between align-items-center mb-4">
+    <div class="title" style="font-size: 24px; font-weight: 800;">Savatcha</div>
+    <button class="close" onclick="toggleCart()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+</div>
+
+<div class="row" id="cart-items-container"> 
+    {% for item in items %}
+    <div class="col-12 mb-3"> 
+        <div class="item" style="border-bottom: 1px solid #f0f0f0; padding-bottom: 15px;">
+            <div class="box" style="display: flex; gap: 15px; align-items: center;"> 
+                <div class="box__img" style="width: 80px; height: 80px; background: #fafafa; border-radius: 15px; padding: 10px; display: flex; align-items: center; justify-content: center;"> 
+                    {% if item.image %}
+                        <img src="{{ item.image }}" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                    {% else %}
+                        <img src="/static/assets/img/burger.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                    {% endif %}
+                </div>
+                <div class="box__content" style="flex: 1;">
+                    <div class="box__title" style="font-weight: 700; font-size: 16px;">{{ item.name }}</div>
+                    <div style="display: flex; align-items: center; gap: 10px; margin: 5px 0;">
+                        <button onclick="updateCart('{{ item.id }}', 'remove')" style="width: 24px; height: 24px; border: 1px solid #ddd; background: #fdfdfd; border-radius: 5px; cursor: pointer;">-</button>
+                        <span style="font-size: 14px; color: #555;">{{ item.quantity }} ta</span>
+                        <button onclick="updateCart('{{ item.id }}', 'add')" style="width: 24px; height: 24px; border: 1px solid #ddd; background: #fdfdfd; border-radius: 5px; cursor: pointer;">+</button>
+                    </div>
+                    <div class="box__const">
+                        <div class="box__cost" style="font-weight: 900; color: #1a1a1a;">{{ item.total|floatformat:0|intcomma }} UZS</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p style="text-align: center; padding: 20px;">Savatchangiz bo'sh</p>
+    {% endfor %}
+  </div>
+</div>
+{% if items %}
+<div class="total"> 
+  <div class="title">Jami:</div>
+  <div class="cost">{{ total|floatformat:0|intcomma }} <span>UZS</span></div>
+</div>
+<div class="buttons" style="display: flex; gap: 10px; margin-top: 20px;">
+  <button class="clear" onclick="clearCart()" style="flex: 1; padding: 15px; border-radius: 12px; border: 2px solid #F1B301; background: transparent; color: #333; font-weight: 700; cursor: pointer;">Tozalash</button>
+  <a href="{% url 'order_page' %}" class="order" style="flex: 1; padding: 15px; border-radius: 12px; background: #F1B301; color: #fff; font-weight: 700; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center;">Buyurtma berish</a>
+</div>
+{% endif %}

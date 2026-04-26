@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mahsulotlar Boshqaruvi - MaxWay Admin{% endblock %}
+{% block page_title %}🍔 Mahsulotlar Ro'yxati{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.9);
+        --glass-border: rgba(0, 0, 0, 0.05);
+        --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .btn-action { padding: 8px 16px; border-radius: 8px; color: #fff; cursor: pointer; font-weight: 600; transition: var(--transition); text-decoration: none; border:none; display:inline-flex; align-items:center; gap:5px;}
+    .btn-add-p { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+    .btn-edit-p { background: linear-gradient(135deg, #F1B301 0%, #d9a101 100%); font-size: 13px; }
+    .btn-delete-p { background: linear-gradient(135deg, #ff0844 0%, #ffb199 100%); font-size: 13px; }
+    
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+    th, td { padding: 18px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+    th { background: #fdfdfd; text-transform: uppercase; font-size: 12px; color: #888; letter-spacing: 1px; }
+    tr:hover { background: #f9f9f9; }
+    .product-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; background: #eee; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
+        <h3 style="color: #800A7A; margin: 0; font-weight: 800;">Mahsulotlar Boshqaruvi</h3>
+        
+        <form method="GET" style="display: flex; gap: 10px; flex: 1; max-width: 400px;">
+            <input type="text" name="q" value="{{ search_query }}" placeholder="Qidiruv (nomi, tavsifi)..." style="flex: 1; padding: 10px 20px; border-radius: 10px; border: 1px solid #eee; outline: none; background: #fafafa;">
+            <button type="submit" class="btn-maxway" style="padding: 10px 20px;"><i class="fas fa-search"></i></button>
+        </form>
+
+        <a href="{% url 'product_create' %}" class="btn-premium btn-add" style="text-decoration: none;">
+            <i class="fas fa-plus"></i> Yangi mahsulot
+        </a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Rasm</th>
+                <th>Nomi</th>
+                <th>Narxi</th>
+                <th>Kategoriya</th>
+                <th style="text-align: right;">Amallar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+            <tr id="row-{{ product.id }}">
+                <td>{% if product.image %}<img src="{{ product.image.url }}" class="product-img">{% else %}<div class="product-img" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center;"><i class="fas fa-image" style="color: #ccc;"></i></div>{% endif %}</td>
+                <td><b>{{ product.name }}</b></td>
+                <td>{{ product.price|floatformat:0 }} UZS</td>
+                <td><span style="background: #f0f0f0; padding: 4px 10px; border-radius: 5px; font-size: 12px;">{{ product.category.name }}</span></td>
+                <td style="text-align: right; display: flex; justify-content: flex-end; gap: 10px;">
+                    <a href="{% url 'product_edit' pk=product.id %}" class="btn-action btn-edit-p"><i class="fas fa-edit"></i></a>
+                    <a href="{% url 'product_delete' pk=product.id %}" class="btn-action btn-delete-p" onclick="return confirm('Haqiqatan ham o\'chirmoqchimisiz?')"><i class="fas fa-trash"></i></a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align: center; padding: 40px; color: #999;">Hozircha mahsulotlar kiritilmagan.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+<script>
+    async function handleDelete(id) {
+        if(!confirm('Haqiqatan ham o\'chirmoqchimisiz?')) return;
+        const row = document.getElementById(`row-${id}`);
+        row.style.opacity = '0.5';
+        try {
+            // API call logic...
+            await new Promise(r => setTimeout(r, 600));
+            row.remove();
+        } catch(e) {
+            alert('Xatolik yuz berdi!');
+            row.style.opacity = '1';
+        }
+    }
+</script>
+{% endblock %}

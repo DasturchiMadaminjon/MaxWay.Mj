@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block page_title %}Yangi Admin Yaratish{% endblock %}
+
+{% block content %}
+<div class="card-custom" style="max-width: 500px; margin: 0 auto;">
+    <h3 style="color: #800A7A; margin-bottom: 25px;">
+        <i class="fas fa-user-plus"></i> Yangi Admin Foydalanuvchi
+    </h3>
+
+    {% if error %}
+    <div style="background: #fdecea; border-left: 4px solid #e74c3c; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; color: #c0392b;">
+        <i class="fas fa-exclamation-circle"></i> {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="form-label">Foydalanuvchi nomi</label>
+            <input type="text" name="username" class="form-control" placeholder="username" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Parol</label>
+            <input type="password" name="password1" class="form-control" placeholder="Kamida 6 belgi" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Parolni takrorlang</label>
+            <input type="password" name="password2" class="form-control" placeholder="Parolni tasdiqlang" required>
+        </div>
+        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" name="is_superuser" id="is_superuser" style="width: auto; cursor: pointer;">
+            <label for="is_superuser" style="cursor: pointer; margin: 0;">Superadmin huquqlari bering</label>
+        </div>
+        <div style="margin-top: 25px; display: flex; gap: 10px;">
+            <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Yaratish</button>
+            <a href="{% url 'admin_user_list' %}" class="btn-maxway" style="background: #eee; color: #333;">Orqaga</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

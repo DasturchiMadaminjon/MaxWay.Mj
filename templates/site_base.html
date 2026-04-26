@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+{% load static %}
+{% load humanize %}
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MaxWay - Mazzali ta'mlar{% endblock %}</title>
+    <!-- Assets from dist -->
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+      /* Extra fixes for integration */
+      .modal { display: none; position: fixed; right: 0; top: 0; background: white; height: 100vh; width: 400px; z-index: 10001; box-shadow: -10px 0 40px rgba(0,0,0,0.15); padding: 0; overflow-y: auto; transition: transform 0.3s ease-in-out; }
+      .modal.active { display: block; animation: slideIn 0.3s ease; }
+      .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px); z-index: 10000; }
+      .modal-overlay.active { display: block; }
+      .shopSpan { color: #800A7A !important; font-weight: 800; display: inline-block; transition: 0.3s; }
+      
+      /* Toast Notification */
+      #toast-container { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 10002; display: flex; flex-direction: column; gap: 10px; align-items: center; pointer-events: none; }
+      .toast-msg { background: #800A7A; color: white; padding: 12px 25px; border-radius: 50px; font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.2); animation: fadeInUp 0.4s ease, fadeOut 0.4s ease 2.5s forwards; display: flex; align-items: center; gap: 10px; font-size: 15px; }
+      
+      @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes fadeOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-10px); } }
+      @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+      @keyframes cartBounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+      
+      .cart-bounce { animation: cartBounce 0.5s ease; color: #F1B301 !important; }
+    </style>
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body> 
+    <div id="toast-container"></div>
+    <!-- Mobile Menu -->
+    <div class="mobMenu"> 
+      <div class="container"> 
+        <div class="menu"> 
+          <div class="logo">
+            <a href="{% url 'product_list' %}">
+               <img src="{% static 'assets/img/logo.svg' %}" style="width:52px; height:55px;" alt="MaxWay">
+            </a>
+          </div>
+          <button class="main"> <span></span></button>
+        </div>
+      </div>
+      <button class="fixed--icon" onclick="toggleCart()">
+         <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+           <path fill-rule="evenodd" clip-rule="evenodd" d="M4 7V5C4 2.23858 6.23858 0 9 0C11.7614 0 14 2.23858 14 5V7H17C17.5523 7 18 7.44772 18 8V20C18 20.5523 17.5523 21 17 21H1C0.447715 21 0 20.5523 0 20V8C0 7.44772 0.447715 7 1 7H4ZM4 9H2V19H16V9H14V11H12V9H6V11H4V9ZM12 5V7H6V5C6 3.34315 7.34315 2 9 2C10.6569 2 12 3.34315 12 5Z" fill="#F1B301"/>
+         </svg>
+      </button>
+      <div class="main__menu">
+        <ul> 
+
+          <li class="list"><a href="{% url 'filiallar_page' %}">Filiallar</a></li>
+          <li class="list"><a href="tel:998712005400">(+99871) 200-54-00</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Desktop Header -->
+    <div class="header" style="background: white; padding: 15px 0; border-bottom: 1px solid #f0f0f0;">
+      <div class="container"> 
+        <div class="menu" style="display: flex; justify-content: space-between; align-items: center;"> 
+          <div class="logo">
+            <a href="{% url 'product_list' %}">
+              <img src="{% static 'assets/img/logo.svg' %}" style="width:52px; height:55px;" alt="MaxWay">
+            </a>
+          </div>
+          <div class="menu__ul"> 
+            <ul style="display: flex; list-style: none; gap: 30px; margin: 0; padding: 0;"> 
+
+              <li class="list"><a href="{% url 'filiallar_page' %}" style="color: black; font-weight: 500; text-decoration: none;">Filiallar</a></li>
+            </ul>
+          </div>
+          <div class="phone--shop" style="display: flex; gap: 25px; align-items: center;">
+            <div class="phone" style="display: flex; align-items: center; gap: 10px;"> 
+              <div class="phone--icon">
+                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.318 11.634C8.66952 10.6957 7.30434 9.33048 6.366 7.682L7.604 6.798C8.016 6.50378 8.14311 5.94807 7.9 5.504C7.12708 4.08968 6.66222 2.52779 6.536 0.921C6.49479 0.400934 6.0607 -6.53648e-05 5.539 2.36236e-08H1.077C0.564126 -0.000110528 0.134313 0.387801 0.082 0.898C0.027 1.428 0 1.962 0 2.5C0 11.06 6.94 18 15.5 18C16.038 18 16.572 17.973 17.102 17.918C17.6122 17.8657 18.0001 17.4359 18 16.923V12.461C18.0001 11.9393 17.5991 11.5052 17.079 11.464C15.4722 11.3378 13.9103 10.8729 12.496 10.1C12.0519 9.85689 11.4962 9.984 11.202 10.396L10.318 11.634ZM5.744 5.668L3.844 7.025C4.05628 7.57134 4.30691 8.10199 4.594 8.613L4.627 8.671C5.74328 10.6324 7.36758 12.2567 9.329 13.373L9.387 13.406C9.89801 13.6931 10.4287 13.9437 10.975 14.156L12.332 12.256C13.4959 12.7952 14.7312 13.1646 16 13.353V15.99C15.834 15.997 15.667 16 15.5 16C8.044 16 2 9.956 2.001 2.5C2.001 2.333 2.004 2.166 2.01 2H4.647C4.83535 3.26884 5.20478 4.50409 5.744 5.668Z" fill="#F1B301"/></svg>
+              </div>
+              <div class="phone--text"><a href="tel:998712005400" style="color: black; text-decoration: none;">(+99871)<br><span class="phoneSpan" style="font-weight: bold;"> 200-54-00</span></a></div>
+            </div>
+            <div class="shop" style="display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="toggleCart()">
+              <button class="shop--icon" style="background: none; border: none; padding: 0;">
+                 <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 7V5C4 2.23858 6.23858 0 9 0C11.7614 0 14 2.23858 14 5V7H17C17.5523 7 18 7.44772 18 8V20C18 20.5523 17.5523 21 17 21H1C0.447715 21 0 20.5523 0 20V8C0 7.44772 0.447715 7 1 7H4ZM4 9H2V19H16V9H14V11H12V9H6V11H4V9ZM12 5V7H6V5C6 3.34315 7.34315 2 9 2C10.6569 2 12 3.34315 12 5Z" fill="#F1B301"/></svg></button>
+              <div class="shop--text">  <span style="color: black;"> Korzina</span><br><span id="cart-total-top" class="shopSpan">{{ cart_total|floatformat:0|intcomma|default:0 }} <span>UZS</span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Body -->
+    {% block content %}{% endblock %}
+
+    <!-- Cart Modal HTML Structure -->
+    <div class="modal-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+    <div class="modal" id="cartModal">
+       <!-- Content will be loaded via AJAX from /cart_modal/ -->
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'assets/js/app.min.js' %}"></script>
+    <script>
+      function showToast(message, isCart = false) {
+        const id = 'toast-' + Date.now();
+        let link = isCart ? `<a href="/order/page/" style="color: #F1B301; margin-left:10px; text-decoration:underline;">Buyurtma berish</a>` : '';
+        $('#toast-container').append(`<div id="${id}" class="toast-msg"><i class="fas fa-check-circle"></i> ${message} ${link}</div>`);
+        setTimeout(() => { $(`#${id}`).remove(); }, 3500);
+      }
+
+      function toggleCart() {
+        if ($('#cartModal').hasClass('active')) {
+          $('#cartModal, #cartOverlay').removeClass('active');
+        } else {
+          // Load cart content
+          $.get('/cart/modal/', function(data) {
+            $('#cartModal').html(data).addClass('active');
+            $('#cartOverlay').addClass('active');
+          });
+        }
+      }
+
+      function addToCart(productId, productName) {
+        $.ajax({
+          url: '/cart/add/',
+          method: 'POST',
+          data: {
+            'product_id': productId,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          success: function(data) {
+            if (data.success) {
+              // Visual Feedback: Toast
+              showToast((productName || "Mahsulot") + " qo'shildi!", true);
+              
+              // Visual Feedback: Bounce Cart
+              $('#cart-total-top').addClass('cart-bounce');
+              setTimeout(() => $('#cart-total-top').removeClass('cart-bounce'), 500);
+              
+              // Update Header Total
+              var formatted = Math.round(data.cart_total).toLocaleString('uz-UZ');
+              $('#cart-total-top').html(formatted + ' <span>UZS</span>');
+              
+              // Update Sidebar (Background refresh)
+              $.get('/cart/modal/', function(cartHtml) {
+                $('#cartModal').html(cartHtml);
+              });
+            }
+          }
+        });
+      }
+
+      function updateCart(productId, action) {
+        $.ajax({
+          url: '/cart/update/',
+          method: 'POST',
+          data: {
+            'product_id': productId,
+            'action': action,
+            'csrfmiddlewaretoken': '{{ csrf_token }}'
+          },
+          success: function(data) {
+            if (data.success) {
+              // Update Header Total
+              var formatted = Math.round(data.cart_total).toLocaleString('uz-UZ');
+              $('#cart-total-top').html(formatted + ' <span>UZS</span>');
+              
+              // Refresh Modal Content
+              $.get('/cart/modal/', function(cartHtml) {
+                $('#cartModal').html(cartHtml);
+              });
+            }
+          }
+        });
+      }
+
+      function clearCart() {
+        $.get('/cart/clear/', function(data) {
+          if (data.success) {
+            $('#cart-total-top').html('0 <span>UZS</span>');
+            $('#cartModal, #cartOverlay').removeClass('active');
+            showToast("Savatcha tozalandi");
+          }
+        });
+      }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
+    <script>
+      $(document).ready(function(){
+        $(".phone-mask").inputmask("+998 (99) 999-99-99");
+      });
+    </script>
+    {% block javascript %}{% endblock %}
+  </body>
+</html>

@@ -1,0 +1,23 @@
+MaxWay Food Delivery Project Structure (Cleaned)
+==============================================
+
+maxway/
+├── adminapp/             # Core business logic (Food delivery models & views)
+│   ├── migrations/       # DB migrations (Category, Product, Order, Branch)
+│   ├── admin.py          # Admin panel configuration
+│   ├── models.py         # DB models (Category, Product, Order, Branch, etc.)
+│   ├── urls.py           # URL routing (for client, auth, and dashboard)
+│   └── views.py          # View logic (Login, Cart, Dashboard, Category CRUD)
+├── config/               # Project-wide settings
+│   ├── settings.py       # Global Django settings
+│   └── urls.py           # Root URL configuration
+├── media/                # Product photos
+├── static/               # Assets (CSS, JS, dashboard themes)
+├── templates/            # HTML templates (Client & Admin)
+├── db.sqlite3            # SQLite database
+├── manage.py             # Django management entry point
+└── requirements.txt      # Dependencies (Django 4.2.3, Pillow)
+
+Generated: 2026-03-24
+Status: Refactored & Stable
+Author: Antigravity Assistant

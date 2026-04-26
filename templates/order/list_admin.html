@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Buyurtmalar Boshqaruvi - MaxWay Admin{% endblock %}
+{% block page_title %}📦 Buyurtmalar Ro'yxati{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Status Badge logic using base.html classes */
+    .btn-maxway i { margin-right: 5px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+    <!-- Search and Export Bar -->
+    <div style="margin-bottom: 30px; background: #fafbfc; padding: 20px; border-radius: 15px; border: 1px solid #f0f2f5;">
+        <form method="GET" style="display: flex; gap: 15px; flex-wrap: wrap; align-items: flex-end;">
+            <!-- Simple Search -->
+            <div style="flex: 1; min-width: 200px;">
+                <label style="font-size: 12px; color: #999; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; display: block;">Qidiruv</label>
+                <input type="text" name="q" value="{{ search_query }}" placeholder="ID, ism yoki tel..." 
+                       style="width: 100%; padding: 10px 15px; border-radius: 10px; border: 1px solid #e0e0e0; outline: none;">
+            </div>
+
+            <!-- Status Filter -->
+            <div style="width: 150px;">
+                <label style="font-size: 12px; color: #999; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; display: block;">Status</label>
+                <select name="status" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e0e0e0; outline: none; background: white;">
+                    <option value="">Barchasi</option>
+                    {% for s in available_statuses %}
+                    <option value="{{ s }}" {% if status_filter == s %}selected{% endif %}>{{ s|capfirst }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Date range -->
+            <div style="width: 150px;">
+                <label style="font-size: 12px; color: #999; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; display: block;">Dan</label>
+                <input type="date" name="start_date" value="{{ start_date }}" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e0e0e0; outline: none;">
+            </div>
+            <div style="width: 150px;">
+                <label style="font-size: 12px; color: #999; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; display: block;">Gacha</label>
+                <input type="date" name="end_date" value="{{ end_date }}" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #e0e0e0; outline: none;">
+            </div>
+
+            <!-- Buttons -->
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn-maxway" style="padding: 10px 20px; height: 42px;">
+                    <i class="fas fa-filter"></i> Filtr
+                </button>
+                <a href="{% url 'order_admin_list' %}" class="btn-maxway" style="background: var(--gray-light); color: var(--gray-text); padding: 10px 20px; height: 42px; box-shadow: none;">
+                    <i class="fas fa-times"></i> Tozalash
+                </a>
+                <a href="{% url 'export_orders_excel' %}?q={{ search_query }}&status={{ status_filter }}&start_date={{ start_date }}&end_date={{ end_date }}" class="btn-maxway" style="background: var(--success); height: 42px;">
+                    <i class="fas fa-file-excel"></i> Export
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Enhanced Table -->
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 80px;">ID</th>
+                    <th>Mijoz</th>
+                    <th>Telefon</th>
+                    <th>Summa</th>
+                    <th>Status</th>
+                    <th>Sana</th>
+                    <th style="text-align: right;">Amallar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td style="font-weight: 700; color: var(--primary);">#{{ order.id }}</td>
+                    <td>
+                        <div style="font-weight: 700; color: var(--dark-text);">{{ order.first_name }}</div>
+                        <small style="color: #999;">{{ order.address|truncatechars:30 }}</small>
+                    </td>
+                    <td style="color: var(--gray-text); font-family: monospace; font-size: 14px;">{{ order.phone }}</td>
+                    <td style="font-weight: 800; color: var(--primary);">{{ order.total_price|floatformat:0|intcomma }} <small>UZS</small></td>
+                    <td>
+                        <span class="badge-pill 
+                            {% if order.status == 'new' %}badge-new
+                            {% elif order.status == 'processing' %}badge-processing
+                            {% elif order.status == 'completed' %}badge-completed
+                            {% elif order.status == 'cancelled' %}badge-cancelled
+                            {% else %}badge-default{% endif %}">
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td style="font-size: 13px; color: #888;">
+                        <div>{{ order.created_at|date:"d.m.Y" }}</div>
+                        <div style="font-size: 11px; opacity: 0.7;">{{ order.created_at|date:"H:i" }}</div>
+                    </td>
+                    <td style="text-align: right; white-space: nowrap;">
+                        <a href="{% url 'order_detail' order.id %}" class="btn-action btn-view" title="Ko'rish">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{% url 'order_delete' order.id %}" class="btn-action btn-delete" title="O'chirish" 
+                           onclick="return confirm('Haqiqatan ham ushbu buyurtmani o\'chirmoqchimisiz?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 60px 0;">
+                        <div style="font-size: 60px; color: #eee; margin-bottom: 20px;"><i class="fas fa-folder-open"></i></div>
+                        <p style="color: #999; font-size: 16px;">Buyurtmalar topilmadi.</p>
+                        {% if request.GET.q %}
+                        <a href="{% url 'order_admin_list' %}" style="color: var(--primary); font-weight: 600;">Filtrni tozalash</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
