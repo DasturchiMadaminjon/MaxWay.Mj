@@ -97,4 +97,10 @@ def order_detail(request, pk):
 
 @login_required
 def profile(request):
-    return render(request, 'profile.html')
+    ctx = { 'counts': {
+        'categories': Category.objects.count(),
+        'products': Product.objects.count(),
+        'orders': Order.objects.count(),
+        'branches': Branch.objects.count(),
+    }}
+    return render(request, 'profile.html', ctx)
